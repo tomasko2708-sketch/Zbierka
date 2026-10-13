@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Moja Pokémon zbierka</title>
+<style>
+:root{--bg:#eef1f6;--card:#fff;--ink:#1b2433;--mute:#6a7488;--line:#d9deea;--blue:#2a4b9b;--yel:#ffcb05;--red:#c8372d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#121826;--card:#1c2538;--ink:#eef1f8;--mute:#9aa5bd;--line:#2c3750;--blue:#8fb0ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:22px;margin:4px 0 14px;font-weight:800;letter-spacing:-.01em}
+.stats{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:12px;color:var(--mute)}
+.stat.main{background:var(--yel);border-color:var(--yel);color:#1b2433}
+.stat.main span{color:#4a4020}
+.tabs,.seg{display:flex;gap:6px;margin-bottom:14px}
+.tabs button,.seg button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 15px system-ui,sans-serif}
+.tabs button[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+@media (prefers-color-scheme:dark){.tabs button[aria-selected="true"]{color:#121826}}
+.seg button[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:16px system-ui,sans-serif;margin-bottom:10px}
+label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.go{width:100%;padding:14px;border:0;border-radius:12px;background:var(--yel);color:#1b2433;font:700 16px system-ui,sans-serif}
+.link{background:none;border:0;color:var(--blue);font:600 14px system-ui,sans-serif;padding:6px 0;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center;color:var(--ink);font:inherit}
+.tile img{width:100%;aspect-ratio:5/7;object-fit:contain;display:block;border-radius:6px;background:var(--bg)}
+.tile small{display:block;font-size:11px;line-height:1.25;margin-top:4px;color:var(--mute)}
+.tile b{display:block;font-size:12px;line-height:1.25;margin-top:4px}
+.pick{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.pick img{width:42%;max-width:190px;border-radius:8px;align-self:flex-start}
+.pick .info{flex:1;min-width:0}
+.pick h2{font-size:18px;margin:0 0 2px}
+.pick p{margin:0 0 10px;color:var(--mute);font-size:14px}
+.item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px 8px 8px;margin-bottom:8px}
+.thumb{width:44px;height:62px;border-radius:5px;object-fit:contain;background:var(--bg);flex:none;display:flex;align-items:center;justify-content:center;font-size:22px}
+.item .t{flex:1;min-width:0}
+.item .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .m{font-size:13px;color:var(--mute)}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin-right:6px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:18px}
+.qty span{min-width:22px;text-align:center;font-weight:700}
+.del{border:0;background:none;color:var(--red);font-size:12px;padding:4px}
+.empty{text-align:center;color:var(--mute);padding:24px 10px}
+.tools{margin-top:22px;font-size:14px}
+.tools button{padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;margin:0 6px 6px 0}
+textarea{width:100%;height:90px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px;font:13px monospace}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.upd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;color:var(--mute)}
+.upd button{padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;flex:none}
+.up{color:#2e9d5b;font-weight:600}.dn{color:var(--red);font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Moja Pokémon zbierka</h1>
+<div class="stats">
+  <div class="stat main"><b id="sVal">0 €</b><span>Hodnota</span></div>
+  <div class="stat"><b id="sCards">0</b><span>Kariet</span></div>
+  <div class="stat"><b id="sSealed">0</b><span>Sealed</span></div>
+</div>
+<div class="tabs" role="tablist">
+  <button role="tab" id="tabList" aria-selected="true">Zbierka</button>
+  <button role="tab" id="tabAdd" aria-selected="false">Pridať</button>
+</div>
+
+<section id="viewList">
+  <div class="upd"><span id="updInfo">Ceny kariet sa načítavajú z Cardmarketu.</span><button id="refBtn">Obnoviť ceny</button></div>
+  <input id="q" type="search" placeholder="Hľadať vo svojej zbierke">
+  <select id="f"><option value="">Všetko</option><option value="karta">Iba karty</option><option value="sealed">Iba sealed</option></select>
+  <div id="list"></div>
+  <div class="tools">
+    <button id="exp">Exportovať zálohu</button><button id="imp">Importovať zálohu</button>
+    <textarea id="box" hidden placeholder="Tu sa zobrazí záloha. Pri importe ju vložte sem a znova stlačte Importovať."></textarea>
+  </div>
+</section>
+
+<section id="viewAdd" hidden>
+  <div class="seg">
+    <button id="tKarta" aria-pressed="true">Karta</button>
+    <button id="tSealed" aria-pressed="false">Sealed produkt</button>
+  </div>
+
+  <div id="searchBox">
+    <input id="sq" type="search" placeholder="Hľadať kartu, napr. Charizard ex" autocomplete="off">
+    <div id="status" class="empty" style="padding:8px"></div>
+    <div id="results" class="grid"></div>
+    <button class="link" id="toManual">Nenašli ste ju? Pridať ručne</button>
+  </div>
+
+  <div id="pickBox" class="pick" hidden>
+    <img id="pickImg" alt="">
+    <div class="info">
+      <h2 id="pickName"></h2>
+      <p id="pickSet"></p>
+      <label for="pQty">Počet kusov</label><input id="pQty" type="number" inputmode="numeric" min="1" value="1">
+      <label for="pVal">Hodnota za kus (€)</label><input id="pVal" type="number" inputmode="decimal" min="0" step="0.01">
+      <button class="go" id="pAdd">Pridať do zbierky</button>
+      <button class="link" id="pBack">Zrušiť výber</button>
+    </div>
+  </div>
+
+  <div id="manual" hidden>
+    <label for="name">Názov</label>
+    <input id="name" placeholder="napr. Elite Trainer Box">
+    <label for="set">Set / séria</label>
+    <input id="set" placeholder="napr. Obsidian Flames">
+    <div class="row">
+      <div><label for="qtyIn">Počet kusov</label><input id="qtyIn" type="number" inputmode="numeric" min="1" value="1"></div>
+      <div><label for="val">Hodnota za kus (€)</label><input id="val" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></div>
+    </div>
+    <button class="go" id="save">Pridať do zbierky</button>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+var KEY="pokemon-zbierka-v1",mem=[],items=[],type="karta",manual=false,pick=null,timer=null,seq=0;
+function load(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return mem}
+function save(){mem=items;try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+items=load();
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function eur(n){return n.toLocaleString("sk-SK",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"}
+function show(tab){var a=tab==="add";$("viewAdd").hidden=!a;$("viewList").hidden=a;$("tabAdd").setAttribute("aria-selected",a);$("tabList").setAttribute("aria-selected",!a)}
+function layout(){
+  var cardSearch=type==="karta"&&!manual&&!pick;
+  $("searchBox").hidden=!cardSearch;
+  $("pickBox").hidden=!pick;
+  $("manual").hidden=!(manual||type==="sealed")||!!pick;
+  $("toManual").hidden=type!=="karta";
+}
+function setType(t){type=t;if(t==="sealed"){pick=null}else{manual=false}
+  $("tKarta").setAttribute("aria-pressed",t==="karta");$("tSealed").setAttribute("aria-pressed",t==="sealed");layout()}
+function render(){
+  var c=0,s=0,v=0;
+  items.forEach(function(i){v+=i.qty*i.val;if(i.type==="karta")c+=i.qty;else s+=i.qty});
+  $("sVal").textContent=eur(v);$("sCards").textContent=c;$("sSealed").textContent=s;
+  var q=$("q").value.trim().toLowerCase(),f=$("f").value;
+  var shown=items.filter(function(i){return(!f||i.type===f)&&(!q||(i.name+" "+i.set).toLowerCase().indexOf(q)>-1)});
+  if(!shown.length){$("list").innerHTML='<div class="empty">'+(items.length?'Nič sa nenašlo.':'Zbierka je prázdna. Stlačte Pridať a vyhľadajte prvú kartu alebo produkt.')+'</div>';return}
+  $("list").innerHTML=shown.map(function(i){
+    var th=i.img?'<img class="thumb" src="'+esc(i.img)+'" alt="" loading="lazy">':'<div class="thumb">'+(i.type==="karta"?"🃏":"📦")+'</div>';
+    return '<div class="item">'+th+'<div class="t"><div class="n">'+esc(i.name)+'</div><div class="m"><span class="tag">'+(i.type==="karta"?"Karta":"Sealed")+'</span>'+esc(i.set||"bez setu")+'<br>'+eur(i.val)+'/ks'+chg(i)+'</div></div>'+
+    '<div class="qty"><button data-a="m" data-id="'+i.id+'" aria-label="Menej">−</button><span>'+i.qty+'</span><button data-a="p" data-id="'+i.id+'" aria-label="Viac">+</button></div>'+
+    '<button class="del" data-a="d" data-id="'+i.id+'">Zmazať</button></div>'}).join("")}
+
+function add(o){
+  var ex=items.filter(function(i){return i.type===o.type&&(o.apiId?i.apiId===o.apiId:(i.name.toLowerCase()===o.name.toLowerCase()&&i.set.toLowerCase()===o.set.toLowerCase()))})[0];
+  if(ex){ex.qty+=o.qty;if(o.val)ex.val=o.val;if(o.img&&!ex.img)ex.img=o.img}
+  else{o.id=Date.now()+""+Math.floor(Math.random()*1000);items.unshift(o)}
+  save();render();show("list")}
+
+/* Hľadanie kariet v Pokémon TCG API */
+function price(c){
+  var cm=c.cardmarket&&c.cardmarket.prices;
+  if(cm){var p=cm.trendPrice||cm.averageSellPrice||cm.avg30;if(p)return Math.round(p*100)/100}
+  return 0}
+function search(text){
+  var my=++seq;text=text.trim();
+  if(text.length<2){$("results").innerHTML="";$("status").textContent="Napíšte aspoň 2 písmená názvu karty.";return}
+  $("status").textContent="Hľadám...";
+  var q='name:"'+text.replace(/"/g,"")+'*"';
+  var url="https://api.pokemontcg.io/v2/cards?q="+encodeURIComponent(q)+"&pageSize=30&orderBy=-set.releaseDate&select=id,name,number,set,images,cardmarket";
+  fetch(url).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(d){
+    if(my!==seq)return;
+    var cards=d.data||[];
+    if(!cards.length){$("results").innerHTML="";$("status").textContent="Nič sa nenašlo. Skúste anglický názov alebo pridajte ručne.";return}
+    $("status").textContent="";
+    $("results").innerHTML=cards.map(function(c,k){
+      return '<button class="tile" data-k="'+k+'"><img src="'+esc(c.images.small)+'" alt="'+esc(c.name)+'" loading="lazy"><b>'+esc(c.name)+'</b><small>'+esc(c.set.name)+' #'+esc(c.number)+'</small></button>'}).join("");
+    $("results").cards=cards;
+  }).catch(function(){
+    if(my!==seq)return;
+    $("results").innerHTML="";$("status").textContent="Vyhľadávanie sa nepodarilo. Skontrolujte internet alebo skúste neskôr, prípadne pridajte ručne.";});
+}
+$("sq").oninput=function(){clearTimeout(timer);var v=this.value;timer=setTimeout(function(){search(v)},450)};
+$("results").onclick=function(e){
+  var t=e.target.closest(".tile");if(!t)return;
+  var c=$("results").cards[+t.getAttribute("data-k")];if(!c)return;
+  pick={apiId:c.id,name:c.name,set:c.set.name+" #"+c.number,img:c.images.small,big:c.images.large||c.images.small,val:price(c)};
+  $("pickImg").src=pick.big;$("pickImg").alt=pick.name;$("pickName").textContent=pick.name;$("pickSet").textContent=pick.set;
+  $("pQty").value=1;$("pVal").value=pick.val?pick.val.toFixed(2):"";layout();window.scrollTo(0,0)};
+$("pBack").onclick=function(){pick=null;layout()};
+$("pAdd").onclick=function(){
+  if(!pick)return;
+  add({type:"karta",apiId:pick.apiId,name:pick.name,set:pick.set,img:pick.img,p0:parseFloat($("pVal").value)||0,qty:Math.max(1,parseInt($("pQty").value,10)||1),val:parseFloat($("pVal").value)||0});
+  pick=null;layout()};
+$("toManual").onclick=function(){manual=true;layout()};
+
+/* Ručné pridanie */
+$("save").onclick=function(){
+  var n=$("name").value.trim();if(!n){$("name").focus();return}
+  add({type:type,name:n,set:$("set").value.trim(),qty:Math.max(1,parseInt($("qtyIn").value,10)||1),val:parseFloat($("val").value)||0});
+  $("name").value="";$("set").value="";$("qtyIn").value=1;$("val").value="";manual=false;layout()};
+
+$("tabList").onclick=function(){show("list")};$("tabAdd").onclick=function(){show("add")};
+$("tKarta").onclick=function(){setType("karta")};$("tSealed").onclick=function(){setType("sealed")};
+$("list").onclick=function(e){
+  var b=e.target.closest("button");if(!b)return;var id=b.getAttribute("data-id"),a=b.getAttribute("data-a");
+  var it=items.filter(function(i){return i.id===id})[0];if(!it)return;
+  if(a==="p")it.qty++;else if(a==="m"){it.qty--;if(it.qty<1)items=items.filter(function(i){return i!==it})}
+  else if(a==="d"&&confirm("Zmazať "+it.name+"?"))items=items.filter(function(i){return i!==it});
+  save();render()};
+$("q").oninput=render;$("f").onchange=render;
+$("exp").onclick=function(){$("box").hidden=false;$("box").value=JSON.stringify(items);$("box").select()};
+$("imp").onclick=function(){
+  if($("box").hidden){$("box").hidden=false;$("box").value="";$("box").focus();return}
+  try{var d=JSON.parse($("box").value);if(Array.isArray(d)){items=d;save();render();$("box").hidden=true}}catch(e){alert("Záloha nie je platná.")}};
+/* Aktuálne ceny */
+var UPD="pokemon-zbierka-upd";
+function chg(i){
+  if(!i.apiId||!i.p0||!i.val||i.val===i.p0)return "";
+  var d=(i.val-i.p0)/i.p0*100;
+  return ' <span class="'+(d>0?"up":"dn")+'">'+(d>0?"▲ +":"▼ ")+d.toFixed(1).replace(".",",")+' %</span>'}
+function lastUpd(){try{return +localStorage.getItem(UPD)||0}catch(e){return 0}}
+function refresh(){
+  var ids=[];items.forEach(function(i){if(i.apiId&&ids.indexOf(i.apiId)<0)ids.push(i.apiId)});
+  if(!ids.length){$("updInfo").textContent="Pridajte kartu a jej cena sa bude sama aktualizovať.";return}
+  $("updInfo").textContent="Aktualizujem ceny...";$("refBtn").disabled=true;
+  var chunks=[];for(var k=0;k<ids.length;k+=20)chunks.push(ids.slice(k,k+20));
+  Promise.all(chunks.map(function(ch){
+    var q=ch.map(function(id){return 'id:"'+id+'"'}).join(" OR ");
+    return fetch("https://api.pokemontcg.io/v2/cards?q="+encodeURIComponent(q)+"&pageSize=250&select=id,cardmarket").then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+  })).then(function(res){
+    var map={};res.forEach(function(d){(d.data||[]).forEach(function(c){var p=price(c);if(p>0)map[c.id]=p})});
+    var n=0;items.forEach(function(i){var p=map[i.apiId];if(p){if(!i.p0)i.p0=i.val>0?i.val:p;if(i.val!==p)n++;i.val=p}});
+    save();try{localStorage.setItem(UPD,Date.now())}catch(e){}
+    var t=new Date();$("updInfo").textContent="Ceny aktualizované o "+t.toLocaleTimeString("sk-SK",{hour:"2-digit",minute:"2-digit"})+" (zdroj: Cardmarket)";
+    render()
+  }).catch(function(){$("updInfo").textContent="Ceny sa nepodarilo aktualizovať. Skontrolujte internet a skúste znova."})
+  .then(function(){$("refBtn").disabled=false})}
+$("refBtn").onclick=refresh;
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&Date.now()-lastUpd()>30*60*1000)refresh()});
+
+$("status").textContent="Napíšte názov karty, napr. Pikachu.";
+layout();render();refresh();
+})();
+</script>
+</body>
+</html>
